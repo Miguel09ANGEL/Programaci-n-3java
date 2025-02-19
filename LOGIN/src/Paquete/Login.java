@@ -1,10 +1,10 @@
 package Paquete;
+import  java.awt.Dimension;
 
 public class Login {
 
 	public static void main(String[] args) {
-		System.out.println("Hola Mundo");
-		// TODO Auto-generated method stub
+		Ventana objeto= new Ventana();
 
 	}
 
