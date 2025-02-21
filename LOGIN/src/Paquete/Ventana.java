@@ -1,33 +1,24 @@
 package Paquete;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
-public class Ventana extends JFrame {
-	public Ventana() {
+public class Ventana extends JFrame{
+	public Ventana(){
 		this.setVisible(true);
 		this.setSize(500,500);
 		this.setLocationRelativeTo(null);
 		
-		this.setTitle("Login");
+		this.setTitle("LOGIN");
 		
-		this.setDefaultCloseOperation(JFRame.EXIT_ON_CLOSE);
-		
-		
-		
-		this.setMaximumSize(new Dimension(800,800));
-		this.setMinimumSize(new Dimension (400,400));
-		//this.setResizable(true);
-		this.add(this.login());
-		this.repaint();
-		
-		
-		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	
 	}
-	public JPanellogin()
-	{
-		JPanel mipanel = new JPanel();
-		mipanel.setBackground(Color.YELLOW);
-		
-		
-		return null;
-	}
+	
+	
 }
