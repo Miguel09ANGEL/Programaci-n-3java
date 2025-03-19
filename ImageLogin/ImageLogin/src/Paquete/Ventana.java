@@ -1,9 +1,12 @@
+
 package Paquete;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -12,9 +15,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -27,62 +27,24 @@ import javax.swing.SwingUtilities;
 public class Ventana extends JFrame {
 
 
-    public Ventana() {
-    	
-    	setVisible(true);
-    	setSize(600, 500);
-    	setLocationRelativeTo(null);
-    	
-    	setTitle("Login");    	
-    	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    	
-    	setMaximumSize(new Dimension(700, 700));
-    	setMinimumSize(new Dimension(400, 400));
-    	
-    	this.add(this.logins());
-    	//this.add(this.registro());
-    	//this.add(this.scrooll_pane());
-    	
-    	this.repaint();
-    	
-    }
-    
-    JMenuBar barra = new JMenuBar();
-    
-    JMenu file = new JMenu ("Archivo");
-    barra.add(file);
-    
-    JMenuItem open = new JMenuItem("Abrir");
-    file.add(open);
-    
-    JMenuItem close = new JMenuItem("Cerrar");
-    file.add(close);
-    
-    JMenuItem op_2 = new JMenuItem("Guardar");
-    file.add(op_2);
-    
-    JMenuItem op_3 = new JMenuItem("Guarda");
-    file.add(op_3);
-    
-    JMenuItem op_4 = new JMenuItem("G");
-    file.add(op_4);
-    
-    JMenuItem op5 = new JMenuItem("Gu");
-    file.add(op5);
-    
-    
-    JCheckBoxMenuItem op_5 = new JCheckBoxItem ("Hola");
-    menu_2.add(op_5);
-    
-    this.setJMenuBar(barra);
-    
-    this.repaint();
-    this.revalidate();
-    
-    
-    
-    
-    
-   
+	  public Ventana() {
+	        setVisible(true);
+	        setSize(600, 500);
+	        setLocationRelativeTo(null);
+	        setTitle("Login");
+	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	        setMaximumSize(new Dimension(700, 700));
+	        setMinimumSize(new Dimension(400, 400));
+
+	        this.add(this.logins());
+	        //this.add(this.Registro());
+	        this.repaint();
+	    }
+
+	    public static void main(String[] args) {
+	        SwingUtilities.invokeLater(() -> new Ventana());
+	    }
+	
     
     public JPanel logins() {
     	
@@ -151,6 +113,15 @@ public class Ventana extends JFrame {
         botonAcceder.setSize(120, 40);
         botonAcceder.setLocation(90, 350);
         botonAcceder.setFont(new Font("Montserrat ", Font.BOLD, 15));
+        
+        botonAcceder.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				router("registro");
+				
+			}
+		});
         elPanel.add(botonAcceder);
         
         JLabel CrearCuenta = new JLabel("¿No tienes cuenta? Crear cuenta");
@@ -167,4 +138,52 @@ public class Ventana extends JFrame {
     	
     	
     }
+    
+    public JPanel Registro() {
+    	JPanel registro = new JPanel();
+    	
+    	registro.setBackground(Color.decode("#FFFFFF"));
+    	registro.setOpaque(true);
+    	registro.setSize(this.getWidth(), this.getHeight());
+    	registro.setLocation(0, 0);
+    	registro.setLayout(null);//quita todo el molde
+    	
+    	 JLabel etiqueta3 = new JLabel("Registro:");
+         etiqueta3.setSize(200, 40);
+         etiqueta3.setLocation(250, 50);
+         etiqueta3.setFont(new Font("Montserrat ", Font.BOLD, 15));
+         registro.add(etiqueta3);
+         
+         JButton botonAcceder = new JButton("Acceder");
+         botonAcceder.setSize(120, 40);
+         botonAcceder.setLocation(90, 350);
+         botonAcceder.setFont(new Font("Montserrat ", Font.BOLD, 15));
+         
+         registro.add(botonAcceder);
+         
+         botonAcceder.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				router("login");
+			}
+		});
+         
+    	
+    	return registro; 
+    }
+    
+    public void router(String ruta) {
+        this.getContentPane().removeAll();
+
+        if (ruta.equals("login")) {
+            this.add(this.logins());  // Debe cargar el login
+        } else if (ruta.equals("registro")) {
+            this.add(this.Registro()); // Debe cargar el registro
+        }
+
+        this.repaint();
+        this.revalidate();
+    }
+
 }
