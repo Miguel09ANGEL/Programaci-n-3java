@@ -11,252 +11,160 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.Timer;
-import java.awt.BasicStroke;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
+public class PACMAN implements KeyListener {
 
-public class PACMAN implements KeyListener{
+    private JFrame frame;
+    private DrawingPanel tablero;
+    private int x = 200, y = 100;
+    private int LastPress = 0;
+    private ColisionDetector colisionDetector;
+    private JLabel tiempoTranscurridoLabel;
+    private double tiempoTranscurrido = 0;
 
-	private JFrame frame;
-	private DrawingPanel tablero;
-	private int x= 200, y= 100;
-	private int LastPress =0;
-	private ColisionDetector colisionDetector;
-	private JLabel tiempoTranscurridoLabel;
-	private double tiempoTranscurrido=0;
-	private Timer timer;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PACMAN window = new PACMAN();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public PACMAN() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 550);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
-		JPanel panel = new JPanel();
-		panel.setBackground(new Color(109, 89 , 213));
-		frame.getContentPane().add(panel, BorderLayout.NORTH);
-		
-		JPanel footer = new JPanel();
-		footer.setBackground(new Color(109,89,213));
-		frame.getContentPane().add(footer, BorderLayout.SOUTH);
-		
-		
-		tablero = new DrawingPanel();
-		tablero.setBackground(new Color(0,0,0));
-		frame.getContentPane().add(tablero, BorderLayout.CENTER);
-		
-		tablero.addKeyListener(this);
-		tablero.setFocusable(true);
-		
-		JButton reiniciar = new JButton("Reiniciar");
-		reiniciar.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				x= 300;
-				y= 200;
-				
-				
-				tiempoTranscurrido = 0;
-				
-				tiempoTranscurridoLabel.setText("Tiempo: 0.00s");
-				
-				
-				
-				tablero.repaint();
-				
-				tablero.requestFocus();
-				
-			}
-			
-			
-		});
-		footer.add(reiniciar);
-		
-		tiempoTranscurridoLabel = new JLabel("Tiempo: 0.00s");
-		tiempoTranscurridoLabel.setFont(new Font("Arial", Font.BOLD, 16));
-		footer.add(tiempoTranscurridoLabel);
-		
-		
-		int delay = 10; //milliseconds
-		ActionListener taskPerformer= new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				update();
-				tiempoTranscurrido += 0.01;
-				tiempoTranscurridoLabel.setText("Tiempo: " + String.format("%.2f", tiempoTranscurrido)+ "s");
-			}
-		};
-		new Timer(delay, taskPerformer).start();
-		
-		colisionDetector = new ColisionDetector(x, y, 30, 30);
-
-	}
-	
-	class DrawingPanel extends JPanel {
-		public DrawingPanel() {
-			setBackground(Color.WHITE);
-		}
-		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			Graphics2D g2d = (Graphics2D) g;
-			
-			g2d.setColor(Color.yellow);
-			g2d.fillOval(x,y,40,40);
-			
-		
-		}
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		LastPress = e.getExtendedKeyCode();;
-		update();
-	    
-		}
-	public void update(){
-		
-
-		colisionDetector.actualizarPacMan(x, y);
-	    if (colisionDetector.detectarColision()) {
-	        System.out.println("Colisión detectada!");
-	        
-	        if (LastPress == 87) {
-	            y += 5;
-	        } else if (LastPress == 83) {
-	            y -= 5;
-	        } else if (LastPress == 65) {
-	            x += 5;
-	        } else if (LastPress == 68) {
-	            x -= 5;
-	        }
-	    } else {
-	        if (LastPress == 87) {
-	            y -= 5;
-	            if (y < -25) {
-	                y = 525;
-	            }
-	        }
-	        if (LastPress == 83) {
-	            y += 5;
-	            if (y >= 525) {
-	                y = -25;
-	            }
-	        }
-	        if (LastPress == 65) {
-	            x -= 5;
-	            if (x < -25) {
-	                x = 445;
-	            }
-	        }
-	        if (LastPress == 68) {
-	            x += 5;
-	            if (x >= 445) {
-	                x = -25;
-	            }
-	       }
-	        
-	        tablero.repaint();
-	    }
-	    
-	
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                PACMAN window = new PACMAN();
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
-	
-	
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	class ColisionDetector {
-		private int pacManX, pacManY, pacManW, pacManH;
-	    private int paredX, paredY, paredW, paredH;
-	    private int pared2X, pared2Y, pared2W, pared2H;
 
+    public PACMAN() {
+        initialize();
+    }
 
-        public ColisionDetector(int pacManX, int pacManY, int pacManW, int pacManH) {
-            this.pacManX = pacManX;
-            this.pacManY = pacManY;
-            this.pacManW = pacManW;
-            this.pacManH = pacManH;
-            paredX = 120;
-            paredY = 89;
-            paredW = 90;
-            paredH = 9;
-            pared2X = 120;
-            pared2Y = 450;
-            pared2W = 90;
-            pared2H = 9;
+    private void initialize() {
+        frame = new JFrame();
+        frame.setBounds(100, 100, 450, 550);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(109, 89, 213));
+        frame.getContentPane().add(panel, BorderLayout.NORTH);
+
+        JPanel footer = new JPanel();
+        footer.setBackground(new Color(109, 89, 213));
+        frame.getContentPane().add(footer, BorderLayout.SOUTH);
+
+        tablero = new DrawingPanel();
+        tablero.setBackground(Color.BLACK);
+        frame.getContentPane().add(tablero, BorderLayout.CENTER);
+
+        tablero.addKeyListener(this);
+        tablero.setFocusable(true);
+
+        JButton reiniciar = new JButton("Reiniciar");
+        reiniciar.addActionListener(e -> {
+            x = 300;
+            y = 200;
+            tiempoTranscurrido = 0;
+            tiempoTranscurridoLabel.setText("Tiempo: 0.00s");
+            tablero.repaint();
+            tablero.requestFocus();
+        });
+        footer.add(reiniciar);
+
+        tiempoTranscurridoLabel = new JLabel("Tiempo: 0.00s");
+        tiempoTranscurridoLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        footer.add(tiempoTranscurridoLabel);
+
+        new Timer(10, e -> {
+            update();
+            tiempoTranscurrido += 0.01;
+            tiempoTranscurridoLabel.setText("Tiempo: " + String.format("%.2f", tiempoTranscurrido) + "s");
+        }).start();
+
+        colisionDetector = new ColisionDetector();
+    }
+
+    class DrawingPanel extends JPanel {
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+
+            g2d.setColor(Color.YELLOW);
+            g2d.fillOval(x, y, 40, 40);
+
+            colisionDetector.dibujarParedes(g2d);
         }
-        
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {}
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        LastPress = e.getExtendedKeyCode();
+        update();
+    }
+
+    public void update() {
+        int newX = x;
+        int newY = y;
+
+        if (LastPress == KeyEvent.VK_W) newY -= 5;
+        if (LastPress == KeyEvent.VK_S) newY += 5;
+        if (LastPress == KeyEvent.VK_A) newX -= 5;
+        if (LastPress == KeyEvent.VK_D) newX += 5;
+
+        if (newX < -25) newX = 445;
+        if (newX >= 445) newX = -25;
+        if (newY < -25) newY = 525;
+        if (newY >= 525) newY = -25;
+
+        colisionDetector.actualizarPacMan(newX, newY);
+
+        if (!colisionDetector.detectarColision()) {
+            x = newX;
+            y = newY;
+            tablero.repaint();
+        } else {
+            System.out.println("¡Colisión detectada!");
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {}
+
+    class ColisionDetector {
+        private int pacManX, pacManY, pacManW = 40, pacManH = 40;
+        private final int[][] paredes = {
+            {70, 350, 280, 9}, {0, 0, 450, 9}, {0, 70, 450, 9},
+            {0, 140, 70, 9}, {140, 140, 150, 9}, {0, 190, 70, 9}, {350, 190, 90, 9},
+            {0, 260, 70, 9}, {140, 260, 149, 9}, {350, 260, 90, 9}, {70, 420, 350, 9},
+            {0, 500, 450, 9}, {0, 0, 9, 190}, {0, 260, 9, 260}, {140, 190, 9, 70},
+            {210, 0, 9, 70}, {210, 260, 9, 90}, {280, 190, 9, 70}, {425, 0, 9, 190}, {425, 260, 9, 260}
+        };
+
         public void actualizarPacMan(int x, int y) {
             pacManX = x;
             pacManY = y;
         }
 
         public boolean detectarColision() {
-            if ((pacManX < paredX + paredW &&
-                 pacManX + pacManW > paredX &&
-                 pacManY < paredY + paredH &&
-                 pacManY + pacManH > paredY) ||
-                (pacManX < pared2X + pared2W &&
-                 pacManX + pacManW > pared2X &&
-                 pacManY < pared2Y + pared2H &&
-                 pacManY + pacManH > pared2Y)) {
-                return true;
+            for (int[] pared : paredes) {
+                int px = pared[0], py = pared[1], pw = pared[2], ph = pared[3];
+                if (pacManX < px + pw && pacManX + pacManW > px &&
+                    pacManY < py + ph && pacManY + pacManH > py) {
+                    return true;
+                }
             }
             return false;
         }
 
         public void dibujarParedes(Graphics2D g2d) {
             g2d.setColor(Color.BLUE);
-            g2d.fillRect(paredX, paredY, paredW, paredH);
-            g2d.fillRect(pared2X, pared2Y, pared2W, pared2H);
+            for (int[] pared : paredes) {
+                g2d.fillRect(pared[0], pared[1], pared[2], pared[3]);
+            }
         }
     }
-
-        
-
-
-	}
+} 
